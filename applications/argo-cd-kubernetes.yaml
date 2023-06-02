@@ -1,0 +1,16 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kubernetes-app
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/mapspiral/gitops-environment.git
+    targetRevision: main
+    path: src/argo-cd-kubernetes
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: mapspiral
+  syncPolicy:
+    automated: {}
