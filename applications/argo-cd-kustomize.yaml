@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: https://github.com/mapspiral/gitops-environment.git
+    repoURL: https://github.com/mapspiral/argo-cd-sandbox.git
     targetRevision: main
     path: src/argo-cd-kustomize/overlays/default
   destination:
