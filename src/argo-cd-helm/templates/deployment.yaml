@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: argo-cd-helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: argo-cd-helm
+  template:
+    metadata:
+      labels:
+        app: argo-cd-helm
+    spec:
+      containers:
+      - image: nginxdemos/hello:0.3
+        name: argo-cd-helm-application
+        ports:
+        - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: argo-cd-helm
+  labels:
+    app: argo-cd-helm
+spec:
+  type: ClusterIP
+  selector:
+    app: argo-cd-helm
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetPort: 80
