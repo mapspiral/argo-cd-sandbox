@@ -5,3 +5,4 @@ resources:
 - argo-cd-kubernetes.yaml
 - argo-cd-kustomize.yaml
 - argo-cd-helm.yaml
+- vault.yaml
