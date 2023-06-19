@@ -27,7 +27,7 @@ kubectl create namespace argocd
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
 
 declare argocd_password=$(kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d)
-echo "Vault password: ${argocd_password}"
+echo "Argo CD password: ${argocd_password}"
 
 printf "Creating target namespace...\n"
 kubectl create namespace mapspiral
@@ -35,15 +35,16 @@ kubectl create namespace mapspiral
 printf "Creating Argo CD Applications...\n"
 kubectl kustomize applications | kubectl apply -f -
 
-# Allow some time for Vault to start and grep the Vault keys
-declare vault_init=$(kubectl exec -it -n vault pods/vault-0 -- vault operator init)
-declare -a vault_keys=($(echo ${vault_init} | grep 'Unseal' | awk '{print $4}'))
+declare pod_status=$(kubectl get pods -n vault vault-0 -o jsonpath="{.status.phase}")
+declare -a vault_keys=($(kubectl exec -it -n vault pods/vault-0 -- vault operator init --format=json | jq -r  '.unseal_keys_b64[]'))
 
+echo ${vault_keus} > ./vault_keys.json
+
+kubectl exec -it --namespace vault vault-0 -- vault operator unseal -reset
 for key in "${vault_keys[@]}"
 do
-    kubectl exec -it -n vault vault-0 -- vault operator unseal ${key}
+    kubectl exec -it --namespace vault vault-0 -- vault operator unseal --format=json $(echo ${key})
 done
-
 ```
 
 Next, give Argo CD some time to synchronize the application before continuing.
